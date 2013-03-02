@@ -1,4 +1,5 @@
 #include "mainwindow.h"
+
 #include <QApplication>
 
 #include <QtCore/qt_windows.h>
@@ -36,7 +37,7 @@ int main(int argc, char *argv[])
     MainWindow w;
     w.show();
     InstallHook((void*)w.winId());
-    SetWindowPos((HWND)w.winId(), HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE);
+//    SetWindowPos((HWND)w.winId(), HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE);
     int result = a.exec();
     UninstallHook(0);
     FreeLibrary( hDLL );

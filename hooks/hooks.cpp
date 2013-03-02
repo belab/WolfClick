@@ -5,6 +5,7 @@
 
 #include <stdio.h>
 
+#include <iostream>
 
 #pragma data_seg ("shared")
 HHOOK g_hMouseHook = NULL;
@@ -23,16 +24,20 @@ BOOL APIENTRY DllMain( HINSTANCE hInst, DWORD, LPVOID )
 }
 
 
+
+
+
 BOOL InstallHook( void* hWnd )
 {
     g_hWnd = HWND( hWnd );
     if( g_hMouseHook != NULL )
         return TRUE;
-    g_hMouseHook = SetWindowsHookEx( WH_MOUSE, MouseProc, g_hInst, 0);
+    g_hMouseHook = SetWindowsHookEx( WH_MOUSE_LL, MouseProc, g_hInst, 0);
     if( g_hMouseHook == NULL )
         return FALSE;
     return TRUE;
 }
+
 
 BOOL UninstallHook(void*)
 {
@@ -65,6 +70,10 @@ LRESULT CALLBACK MouseProc( int nCode, WPARAM wParam, LPARAM lParam )
         default:
             break;
         }
+    }
+    else
+    {
+        std::cout << "hello ncode" << std::endl;
     }
     return CallNextHookEx( g_hMouseHook, nCode, wParam, lParam );
 }
