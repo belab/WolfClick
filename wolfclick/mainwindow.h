@@ -31,6 +31,7 @@ public slots:
     void on_actionRecord_toggled(bool on);
     void on_actionPlay_toggled(bool on);
     void on_actionStop_triggered();
+    void on_actionClear_triggered();
     void onTimerTimeout();
 
 private:

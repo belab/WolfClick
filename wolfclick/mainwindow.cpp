@@ -3,7 +3,11 @@
 #include "customwidget.h"
 
 #include <QtCore/qt_windows.h>
-#include<QTimer>
+#include <QTimer>
+#include <QTreeWidgetItem>
+#include <QPixmap>
+#include <QScreen>
+#include <QGuiApplication>
 
 #include <iostream>
 
@@ -105,6 +109,13 @@ void MainWindow::on_actionStop_triggered()
     ui->actionRecord->setChecked(false);
 }
 
+void MainWindow::on_actionClear_triggered()
+{
+    m_mouseFrameIndex=0;
+    m_mouseFrames.clear();
+    ui->treeWidget->clear();
+}
+
 void MainWindow::onTimerTimeout()
 {
     std::cout << "blub" << std::endl;
@@ -148,6 +159,11 @@ bool MainWindow::isPlaying()
 void MainWindow::addMouseClick(int x, int y)
 {
     m_mouseFrames.push_back( MouseFrame(x,y));
+    QScreen* screen = QGuiApplication::primaryScreen();
+    QPixmap pixmap = screen->grabWindow(0, x, y, 10, 10);
+    QTreeWidgetItem* item = new QTreeWidgetItem(ui->treeWidget);
+    item->setData(0, Qt::DecorationRole, pixmap	);
+    item->setText(1, QString("[%1,%2]").arg(x).arg(y));
 }
 
 void MainWindow::stop()
