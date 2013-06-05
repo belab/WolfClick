@@ -3,8 +3,6 @@
 #include <QMainWindow>
 #include <QPoint>
 
-#include <list>
-
 namespace Ui {
 class MainWindow;
 }
@@ -24,6 +22,14 @@ public:
     bool isPlaying();
     void addMouseClick(int x, int y);
     void stop();
+
+    struct MouseFrame
+    {
+        MouseFrame(){}
+        MouseFrame(int x, int y):pos(x,y){}
+        QPoint pos;
+    };
+
 public slots:
     void onMouseClicked( int x, int y );
     void on_pushButton_clicked();
@@ -42,13 +48,7 @@ private:
     QTimer* m_timer;
     bool m_isRecording;
     bool m_isPlaying;
-    size_t m_mouseFrameIndex;
-    struct MouseFrame
-    {
-        MouseFrame(int x, int y):pos(x,y){}
-        QPoint pos;
-    };
-
-    std::vector<MouseFrame> m_mouseFrames;
+    int m_mouseFrameIndex;
 };
+Q_DECLARE_METATYPE(MainWindow::MouseFrame)
 

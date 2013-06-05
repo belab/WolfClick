@@ -15,11 +15,6 @@ CustomWidget::CustomWidget(QWidget *parent)
               Qt::WindowTransparentForInput |
               Qt::WindowStaysOnTopHint )
 {
-    // |
-//    QTimer *timer = new QTimer(this);
-//    connect(timer, SIGNAL(timeout()), this, SLOT(update()));
-//    timer->start(1000);
-//    setAttribute(Qt::WA_TransparentForMouseEvents);
     setAttribute( Qt::WA_TranslucentBackground );
 }
 

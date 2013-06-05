@@ -12,7 +12,7 @@
 #include <iostream>
 
 // LeftClick function
-void LeftClick ( )
+void LeftClick()
 {
   INPUT    Input={0};
   // left down
@@ -27,7 +27,7 @@ void LeftClick ( )
   ::SendInput(1,&Input,sizeof(INPUT));
 }
 // MouseMove function
-void MouseMove (int x, int y )
+void MouseMove(int x, int y )
 {
     double fScreenWidth    = ::GetSystemMetrics( SM_CXSCREEN )-1;
     double fScreenHeight  = ::GetSystemMetrics( SM_CYSCREEN )-1;
@@ -72,7 +72,7 @@ void MainWindow::onMouseClicked(int x, int y)
 
 void MainWindow::on_pushButton_clicked()
 {
-    std::cout << "do something clever" << std::endl;
+    std::cout << "clicked dummy" << std::endl;
 }
 
 void MainWindow::on_actionQuit_triggered()
@@ -84,7 +84,15 @@ void MainWindow::on_actionRecord_toggled(bool on)
 {
     if( on )
     {
-        m_mouseFrames.clear();
+        ui->treeWidget->clear();
+    }
+    else
+    {
+        int itemCount = ui->treeWidget->topLevelItemCount();
+        if( itemCount > 0 )
+        {
+            delete ui->treeWidget->topLevelItem( itemCount-1 );
+        }
     }
     m_isRecording = on;
 }
@@ -100,6 +108,7 @@ void MainWindow::on_actionPlay_toggled(bool on)
     else
     {
         m_timer->stop();
+        m_mouseFrameIndex = 0;
     }
 }
 
@@ -111,21 +120,24 @@ void MainWindow::on_actionStop_triggered()
 
 void MainWindow::on_actionClear_triggered()
 {
-    m_mouseFrameIndex=0;
-    m_mouseFrames.clear();
     ui->treeWidget->clear();
 }
 
 void MainWindow::onTimerTimeout()
 {
-    std::cout << "blub" << std::endl;
-    if( m_mouseFrameIndex < m_mouseFrames.size() )
+    if( m_mouseFrameIndex < ui->treeWidget->topLevelItemCount() )
     {
-        QPoint& p = m_mouseFrames[m_mouseFrameIndex++].pos;
-        w->move( p.x()-w->width()/2, p.y()-w->height()/2 );
-        MouseMove( p.x(), p.y() );
+        const QVariant& v =
+                ui->treeWidget->topLevelItem(m_mouseFrameIndex++)->data(0, Qt::UserRole);
+        const MouseFrame& frame = v.value<MouseFrame>();
+        w->move( frame.pos.x()-w->width()/2, frame.pos.y()-w->height()/2 );
+        MouseMove( frame.pos.x(), frame.pos.y() );
+        LeftClick();
     }
-
+    if( m_mouseFrameIndex >= ui->treeWidget->topLevelItemCount() )
+    {
+        on_actionStop_triggered();
+    }
 }
 
 void MainWindow::closeEvent(QCloseEvent*)
@@ -158,12 +170,12 @@ bool MainWindow::isPlaying()
 
 void MainWindow::addMouseClick(int x, int y)
 {
-    m_mouseFrames.push_back( MouseFrame(x,y));
     QScreen* screen = QGuiApplication::primaryScreen();
     QPixmap pixmap = screen->grabWindow(0, x, y, 10, 10);
     QTreeWidgetItem* item = new QTreeWidgetItem(ui->treeWidget);
     item->setData(0, Qt::DecorationRole, pixmap	);
     item->setText(1, QString("[%1,%2]").arg(x).arg(y));
+    item->setData(0, Qt::UserRole, QVariant::fromValue(MouseFrame(x,y)));
 }
 
 void MainWindow::stop()
