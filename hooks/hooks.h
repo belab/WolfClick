@@ -10,6 +10,9 @@ typedef int BOOL;
 
 extern "C"
 {
-HOOKS_API BOOL InstallHook( void* hWnd );
-HOOKS_API BOOL UninstallHook(void*);
+HOOKS_API BOOL InstallMouseHook( void* hWnd );
+HOOKS_API BOOL UninstallMouseHook(void*);
+HOOKS_API BOOL InstallKeyHook( void* hWnd );
+HOOKS_API BOOL UninstallKeyHook(void*);
+
 }

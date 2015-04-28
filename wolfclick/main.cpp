@@ -5,8 +5,6 @@
 #include <QtCore/qt_windows.h>
 
 typedef bool (CALLBACK *MYFUNC)(void*);
-MYFUNC InstallHook = 0;
-MYFUNC UninstallHook = 0;
 
 int main(int argc, char *argv[])
 {
@@ -17,29 +15,44 @@ int main(int argc, char *argv[])
         return FALSE;
     }
 
-    InstallHook = (MYFUNC) GetProcAddress( hDLL, "InstallHook");
-    if( InstallHook == NULL )
+    MYFUNC InstallMouseHook = (MYFUNC) GetProcAddress( hDLL, "InstallMouseHook");
+    if( InstallMouseHook == NULL )
     {
-        MessageBox( NULL, L"Error: InstallHook not found", L"Error", MB_OK );
+        MessageBox( NULL, L"Error: InstallMouseHook not found", L"Error", MB_OK );
         return FALSE;
     }
 
-    UninstallHook = (MYFUNC) GetProcAddress( hDLL, "UninstallHook");
-    if( UninstallHook == NULL )
+    MYFUNC UninstallMouseHook = (MYFUNC) GetProcAddress( hDLL, "UninstallMouseHook");
+    if( UninstallMouseHook == NULL )
     {
-        MessageBox( NULL, L"Error: UninstallHook not found", L"Error", MB_OK );
+        MessageBox( NULL, L"Error: UninstallMouseHook not found", L"Error", MB_OK );
         return FALSE;
     }
 
+    MYFUNC InstallKeyHook = (MYFUNC) GetProcAddress( hDLL, "InstallKeyHook");
+    if( InstallKeyHook == NULL )
+    {
+        MessageBox( NULL, L"Error: InstallKeyHook not found", L"Error", MB_OK );
+        return FALSE;
+    }
+
+    MYFUNC UninstallKeyHook = (MYFUNC) GetProcAddress( hDLL, "UninstallKeyHook");
+    if( UninstallKeyHook == NULL )
+    {
+        MessageBox( NULL, L"Error: UninstallKeyHook not found", L"Error", MB_OK );
+        return FALSE;
+    }
 
 
     QApplication a(argc, argv);
     MainWindow w;
     w.show();
-    InstallHook((void*)w.winId());
+    InstallMouseHook((void*)w.winId());
+    InstallKeyHook((void*)w.winId());
 //    SetWindowPos((HWND)w.winId(), HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE);
     int result = a.exec();
-    UninstallHook(0);
+    UninstallMouseHook(0);
+    UninstallKeyHook(0);
     FreeLibrary( hDLL );
     return result;
 }
